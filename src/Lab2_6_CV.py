@@ -1,3 +1,5 @@
+import numpy as np
+
 def cross_validation(model, X, y, nFolds):
     """
     Perform cross-validation on a given machine learning model to evaluate its performance.
@@ -45,25 +47,33 @@ def cross_validation(model, X, y, nFolds):
         nFolds = X.shape[0]
 
     # TODO: Calculate fold_size based on the number of folds
-    fold_size = None
+    fold_size = len(X) // nFolds
 
     # TODO: Initialize a list to store the accuracy values of the model for each fold
     accuracy_scores = []
 
     for i in range(nFolds):
         # TODO: Generate indices of samples for the validation set for the fold
-        valid_indices = None
+        start = i * fold_size
+        end = (i + 1) * fold_size
+        valid_indices = list(range(start, end))
 
         # TODO: Generate indices of samples for the training set for the fold
-        train_indices = None
+        train_indices = list(set(range(X.shape[0])) - set(valid_indices))
 
         # TODO: Split the dataset into training and validation
-        X_train, X_valid = None, None
-        y_train, y_valid = None, None
+        X_train, X_valid = X[train_indices], X[valid_indices]
+        y_train, y_valid = y[train_indices], y[valid_indices]
 
         # TODO: Train the model with the training set
+        model.fit(X_train, y_train)
 
         # TODO: Calculate the accuracy of the model with the validation set and store it in accuracy_scores
+        score = model.score(X_valid, y_valid)
+        accuracy_scores.append(score)
 
     # TODO: Return the mean and standard deviation of the accuracy_scores
-    return None, None
+    mean_score = np.mean(accuracy_scores)
+    std_score = np.std(accuracy_scores)
+
+    return mean_score, std_score
